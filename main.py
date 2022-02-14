@@ -1,4 +1,4 @@
-import os
+import os, requests
 from discord.ext import commands
 vap = commands.Bot(command_prefix='v!')
 with open("copypasta.txt") as text:
@@ -27,7 +27,10 @@ async def vappost(ctx, arg):
   if int(arg) <= 0:
     await ctx.channel.send("Argument is lower or equal to zero, please choose a positive integer")
   else:
-    await ctx.channel.send(arg)
+    baseURL = "https://e621.net/posts.json?tags=Vaporeon+-animated&limit="
+    endpoint = f"{baseURL}{arg}"
+    r = requests.get(endpoint)
+    json = r.json()
 
 token = os.environ['TOKEN']
 vap.run(token)
