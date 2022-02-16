@@ -1,4 +1,4 @@
-import os, requests, discord
+import os, requests, discord, random
 from dotenv import load_dotenv
 from discord.ext import commands
 
@@ -37,8 +37,8 @@ async def vapsend(ctx, arg1: discord.Member, arg2):
   if int(arg2) <= 0:
     await ctx.channel.send("The second argument is lower or equal to zero.")
   else:
-    baseURL = "https://e621.net/posts.json?tags=Vaporeon+-animated&limit="
-    endpoint = f"{baseURL}{arg2}"
+    baseURL = "https://e621.net/posts.json?tags=Vaporeon+-animated&limit={number}&page={page}"
+    endpoint = baseURL.format(number = arg2, page = str(random.randrange(1,200)))
     head = {'User-Agent': 'VaporeonBot 1.0.0'}
     r = requests.get(endpoint, headers=head)
     jsonpage = r.json()
@@ -66,8 +66,8 @@ async def vappost(ctx, arg):
   if int(arg) <= 0:
     await ctx.channel.send("Argument is lower or equal to zero, please choose a positive integer.")
   else:
-    baseURL = "https://e621.net/posts.json?tags=Vaporeon+-animated&limit="
-    endpoint = f"{baseURL}{arg}"
+    baseURL = "https://e621.net/posts.json?tags=Vaporeon+-animated&limit={number}&page={page}"
+    endpoint = baseURL.format(number = arg, page = str(random.randrange(1,200)))
     head = {'User-Agent': 'VaporeonBot 1.0.0'}
     r = requests.get(endpoint, headers=head)
     jsonpage = r.json()
