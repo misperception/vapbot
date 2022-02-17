@@ -84,7 +84,7 @@ async def vapsend(ctx, arg1: discord.Member, arg2):
     await ctx.channel.send("The second argument is not a valid number. (format: v!vapsend {user mention} {number of images})")
   if int(arg2) <= 0:
     await ctx.channel.send("The second argument is lower or equal to zero.")
-  elif int(arg2) >> 100:
+  elif int(arg2) > 100:
     await ctx.channel.send("The second argument is higher than 100, please choose a lower number")
   else:
     baseURL = "https://e621.net/posts.json?tags=Vaporeon+-animated&limit={number}&page={page}"
@@ -99,7 +99,10 @@ async def vapsend(ctx, arg1: discord.Member, arg2):
       currentpost = posts[index]
       file = currentpost['file']
       url = file['url']
-      await arg1.send(url)
+      try:
+        await arg1.send(url)
+      except:
+        print("couldn't send URL")
 
 @vap.command(name='vappost')
 async def vappost(ctx, arg):
@@ -130,7 +133,10 @@ async def vappost(ctx, arg):
       currentpost = posts[index]
       file = currentpost['file']
       url = file['url']
-      await ctx.channel.send(url)
+      try:
+        await ctx.channel.send(url)
+      except:
+        print("couldn't send url")
 
 
 load_dotenv('.env')
