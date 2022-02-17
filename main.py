@@ -29,7 +29,7 @@ async def roulette(ctx):
       print(f"roundtwo = {roundtwo}")
       if roundtwo < 6:
         await ctx.channel.send("You fired a blank, loading normal porn...")
-        baseURL = "https://e621.net/posts.json?page={page}&limit=1&tags=-animated"
+        baseURL = "https://e621.net/posts.json?page={page}&limit=1&tags=-animated+rating:explicit"
         endpoint = baseURL.format(page = str(random.randrange(1,201)))
         head = {'User-Agent': 'VaporeonBot 1.0.0'}
         r = requests.get(endpoint, headers=head)
