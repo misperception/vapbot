@@ -1,5 +1,4 @@
 import os, requests, discord, random, time
-from pickle import TRUE
 from dotenv import load_dotenv
 from discord.ext import commands
 
