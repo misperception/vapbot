@@ -29,7 +29,7 @@ async def roulette(ctx):
       print(f"roundtwo = {roundtwo}")
       if roundtwo < 6:
         await ctx.channel.send("You fired a blank, loading normal porn...")
-        baseURL = "https://e621.net/posts.json?page={page}&limit=1"
+        baseURL = "https://e621.net/posts.json?page={page}&limit=1&tags=-animated"
         endpoint = baseURL.format(page = str(random.randrange(1,201)))
         head = {'User-Agent': 'VaporeonBot 1.0.0'}
         r = requests.get(endpoint, headers=head)
@@ -42,7 +42,7 @@ async def roulette(ctx):
         await ctx.send(url)
       elif roundtwo == 6:
         await ctx.channel.send("You fired a shot, loading degeneracy... hope you still have faith in humanity after this...")
-        baseURL = "https://e621.net/posts.json?page={page}&limit=1&tags={tags}"
+        baseURL = "https://e621.net/posts.json?page={page}&limit=1&tags={tags}&-animated"
         tag = ["watersports", "omorashi", "scat", "gore", "vore", "femboy", "anal_vore", "diaper"]
         randomn = random.randrange(1,len(tag))
         endpoint = baseURL.format(page = str(random.randrange(1,201)), tags = tag[randomn - 1])
