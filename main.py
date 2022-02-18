@@ -21,7 +21,9 @@ async def eyebleach(ctx):
   r = requests.get(endpoint, headers=head)
   jsonpage = r.json()
   posts = jsonpage['posts']
+  print(f"eyebleach.posts = {posts}")
   currentpost = posts[0]
+  print(f"eyebleach.currentpost = {currentpost}")
   file = currentpost['file']
   url = file['url']
   print(url)
