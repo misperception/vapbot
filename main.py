@@ -13,6 +13,19 @@ with open("copypastaes.txt",'r', encoding='utf-8') as textes:
 async def on_ready():
   print(copypasta)
 
+@vap.command(name='eyebleach')
+async def eyebleach(ctx):
+  baseURL = "https://e621.net/posts.json?page={page}&tags=vaporeon+rating:safe&limit=1"
+  endpoint = baseURL.format(page = str(random.randrange(1,201)))
+  head = {'User-Agent': 'VaporeonBot 1.0.0'}
+  r = requests.get(endpoint, headers=head)
+  jsonpage = r.json()
+  posts = jsonpage['posts']
+  currentpost = posts[0]
+  file = currentpost['file']
+  url = file['url']
+  await ctx.send(url)
+
 @vap.command(name='roulette')
 async def roulette(ctx):
   if ctx.channel.is_nsfw():
