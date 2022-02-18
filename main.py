@@ -15,7 +15,7 @@ async def on_ready():
 
 @vap.command(name='eyebleach')
 async def eyebleach(ctx):
-  baseURL = "https://e621.net/posts.json?page={page}&tags=vaporeon+rating:safe&limit=1"
+  baseURL = "https://e621.net/posts.json?page={page}&tags=vaporeon+rating:safe+kemono&limit=1"
   endpoint = baseURL.format(page = str(random.randrange(1,201)))
   head = {'User-Agent': 'VaporeonBot 1.0.0'}
   r = requests.get(endpoint, headers=head)
