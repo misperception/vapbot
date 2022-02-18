@@ -21,22 +21,17 @@ async def eyebleach(ctx):
   r = requests.get(endpoint, headers=head)
   jsonpage = r.json()
   posts = jsonpage['posts']
-  print(f"eyebleach.posts = {posts}")
   currentpost = posts[0]
-  print(f"eyebleach.currentpost = {currentpost}")
   file = currentpost['file']
   url = file['url']
-  print(url)
   try:
     await ctx.send(url)
   except:
     while url == None:
       n = 0
       currentpost = posts[n]
-      print(f"eyebleach.currentpost = {currentpost}")
       file = currentpost['file']
       url = file['url']
-      print(url)
       n += 1
     await ctx.channel.send(url)
 
@@ -57,7 +52,7 @@ async def roulette(ctx):
       print(f"roundtwo = {roundtwo}")
       if roundtwo < 6:
         await ctx.channel.send("You fired a blank, loading normal porn...")
-        baseURL = "https://e621.net/posts.json?page={page}&limit=1&tags=-animated+rating:explicit"
+        baseURL = "https://e621.net/posts.json?page={page}&limit=10&tags=-animated+rating:explicit"
         endpoint = baseURL.format(page = str(random.randrange(1,201)))
         head = {'User-Agent': 'VaporeonBot 1.0.0'}
         r = requests.get(endpoint, headers=head)
@@ -67,10 +62,20 @@ async def roulette(ctx):
         file = currentpost['file']
         url = file['url']
         time.sleep(2)
-        await ctx.send(url)
+        try:
+          await ctx.send(url)
+        except:
+          while url == None:
+            n = 0
+            currentpost = posts[n]
+            file = currentpost['file']
+            url = file['url']
+            n += 1
+          await ctx.channel.send(url)
+
       elif roundtwo == 6:
         await ctx.channel.send("You fired a shot, loading degeneracy... hope you still have faith in humanity after this...")
-        baseURL = "https://e621.net/posts.json?page={page}&limit=1&tags={tags}&-animated"
+        baseURL = "https://e621.net/posts.json?page={page}&limit=10&tags={tags}&-animated"
         tag = ["watersports", "omorashi", "scat", "gore", "vore", "femboy", "anal_vore", "diaper"]
         randomn = random.randrange(1,len(tag))
         endpoint = baseURL.format(page = str(random.randrange(1,201)), tags = tag[randomn - 1])
@@ -84,7 +89,16 @@ async def roulette(ctx):
         time.sleep(1)
         await ctx.channel.send("Brace for impact.")
         time.sleep(2)
-        await ctx.send(url)
+        try:
+          await ctx.send(url)
+        except:
+          while url == None:
+            n = 0
+            currentpost = posts[n]
+            file = currentpost['file']
+            url = file['url']
+            n += 1
+          await ctx.channel.send(url)
   else:
     await ctx.channel.send("Make sure to run this command on a NSFW channel.")
 
