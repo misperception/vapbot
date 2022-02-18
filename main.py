@@ -15,8 +15,8 @@ async def on_ready():
 
 @vap.command(name='eyebleach')
 async def eyebleach(ctx):
-  baseURL = "https://e621.net/posts.json?page={page}&tags=vaporeon+rating:safe+kemono&limit=10"
-  endpoint = baseURL.format(page = str(random.randrange(1,201)))
+  baseURL = "https://e621.net/posts.json?page={page}&tags=vaporeon+rating:safe+-breasts&limit=10"
+  endpoint = baseURL.format(page = str(random.randrange(1,30)))
   head = {'User-Agent': 'VaporeonBot 1.0.0'}
   r = requests.get(endpoint, headers=head)
   jsonpage = r.json()
@@ -27,7 +27,18 @@ async def eyebleach(ctx):
   file = currentpost['file']
   url = file['url']
   print(url)
-  await ctx.send(url)
+  try:
+    await ctx.send(url)
+  except:
+    while url == None:
+      n = 0
+      currentpost = posts[n]
+      print(f"eyebleach.currentpost = {currentpost}")
+      file = currentpost['file']
+      url = file['url']
+      print(url)
+      n += 1
+    await ctx.channel.send(url)
 
 
 @vap.command(name='roulette')
