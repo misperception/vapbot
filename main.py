@@ -27,16 +27,16 @@ async def eyebleach(ctx):
   try:
     await ctx.send(url)
   except:
-    while url == None:
-      n = 0
+    for n in range(len(posts)):
       currentpost = posts[n]
       file = currentpost['file']
       url = file['url']
-      n += 1
-      try:
-        await ctx.channel.send(url)
-      except: return
-    
+      if url != None:
+        break
+    try:
+      await ctx.channel.send(url)
+    except: return
+  
 
 
 @vap.command(name='roulette')
@@ -68,12 +68,13 @@ async def roulette(ctx):
         try:
           await ctx.send(url)
         except:
-          while url == None:
-            n = 0
+          for n in range(len(posts)):
+            print("url does not exist")
             currentpost = posts[n]
             file = currentpost['file']
             url = file['url']
-            n += 1
+            if url != None:
+              break
           try:  
             await ctx.channel.send(url)
             print("safeguard mechanisms activated at round one")
@@ -99,12 +100,13 @@ async def roulette(ctx):
         try:
           await ctx.send(url)
         except:
-          while url == None:
-            n = 0
+          for n in range(len(posts)):
+            print("url does not exist")
             currentpost = posts[n]
             file = currentpost['file']
             url = file['url']
-            n += 1
+            if url != None:
+              break
           try:  
             await ctx.channel.send(url)
             print("safeguard mechanisms activated at round two")
