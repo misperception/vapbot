@@ -33,7 +33,10 @@ async def eyebleach(ctx):
       file = currentpost['file']
       url = file['url']
       n += 1
-    await ctx.channel.send(url)
+      try:
+        await ctx.channel.send(url)
+      except: return
+    
 
 
 @vap.command(name='roulette')
@@ -71,7 +74,11 @@ async def roulette(ctx):
             file = currentpost['file']
             url = file['url']
             n += 1
-          await ctx.channel.send(url)
+          try:  
+            await ctx.channel.send(url)
+            print("safeguard mechanisms activated at round one")
+          except:
+            ctx.channel.send("The bullet got stuck! Lucky!")
 
       elif roundtwo == 6:
         await ctx.channel.send("You fired a shot, loading degeneracy... hope you still have faith in humanity after this...")
@@ -98,7 +105,11 @@ async def roulette(ctx):
             file = currentpost['file']
             url = file['url']
             n += 1
-          await ctx.channel.send(url)
+          try:  
+            await ctx.channel.send(url)
+            print("safeguard mechanisms activated at round two")
+          except:
+            ctx.channel.send("The bullet got stuck! Lucky!")
   else:
     await ctx.channel.send("Make sure to run this command on a NSFW channel.")
 
