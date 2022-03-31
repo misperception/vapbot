@@ -1,10 +1,28 @@
-import os, requests, discord, random, time
+import os, time
 from dotenv import load_dotenv
 from discord.ext import commands
+load_dotenv('.env')
 
 vap = commands.Bot(command_prefix='v!')
 
 cogs = ["cogs.eyebleach", "cogs.fun", "cogs.trollface"]
+
+@vap.command(name='vapreload')
+async def reload(ctx, arg):
+  if str(ctx.author.id) == str(os.getenv('ID')):
+    if arg in cogs:
+      await ctx.channel.send(f"🟧 Reloading {arg}...")
+      try:
+        vap.reload_extension(arg)
+        time.sleep(1)
+        await ctx.channel.send(f"🟩 {arg} reloaded!")
+      except Exception as e:
+        print(f"{arg} couldn't be reloaded due to " + str(e))
+        await ctx.channel.send(f"🟥 {arg} couldn't be reloaded. Check the console for details.")
+    else:
+      await ctx.channel.send("The argument is not a valid module")
+  else:
+    await ctx.channel.send("Maybe this is meant for someone else...")
 
 @vap.event
 async def on_ready():
@@ -22,5 +40,4 @@ async def on_ready():
   time.sleep(2)
   print("Loading complete! Also did you know that in terms of ma-")
 
-load_dotenv('.env')
 vap.run(os.getenv('TOKEN'))
