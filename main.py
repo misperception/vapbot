@@ -39,6 +39,10 @@ async def on_ready():
       print("🟥 " + cog +" couldn't load due to " + str(e))
   time.sleep(2)
   print("Loading complete! Also did you know that in terms of ma-")
+
+async def on_disconnect():
+  print("Vaporeon has breached the jar.")
+
 token = os.getenv('TOKEN')
 try:
   vap.run(token)
