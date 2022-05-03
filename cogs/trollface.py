@@ -19,7 +19,7 @@ class VaporeonPorn(commands.Cog, name="Trolling"):
             posts = jsonpage['posts']
             n = len(posts)
             for index in range(n):
-                print(index)
+                print(index + 1)
                 currentpost = posts[index]
                 file = currentpost['file']
                 url = file['url']
@@ -53,7 +53,7 @@ class VaporeonPorn(commands.Cog, name="Trolling"):
             posts = jsonpage['posts']
             n = len(posts)
             for index in range(n):
-                print(index)
+                print(index + 1)
                 currentpost = posts[index]
                 file = currentpost['file']
                 url = file['url']
