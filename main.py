@@ -39,5 +39,8 @@ async def on_ready():
       print("🟥 " + cog +" couldn't load due to " + str(e))
   time.sleep(2)
   print("Loading complete! Also did you know that in terms of ma-")
-
-vap.run(os.getenv('TOKEN'))
+token = os.getenv('TOKEN')
+try:
+  vap.run(token)
+except Exception as e:
+  print(f"Instance with token {token} couldnt load because of {e}")
