@@ -122,12 +122,13 @@ class Fun(commands.Cog):
         try:
             tags = tags + dict_tag.get(tag) # addition of dict_tag tags according to the argument provided (if at all)
         except:
-            if tag != '?' or 'help':
+            if tag != 'help':
                 await ctx.channel.send(f'{tag} is not a valid tag, please make sure you are using one of the valid tags')
                 return
-            await ctx.send('Tags:')
-            await ctx.send(f'``{dict_tag}``')
-            return
+            else:
+                await ctx.send('Tags:')
+                await ctx.send(f'``{dict_tag}``')
+                return
         endpoint = f'https://e621.net/posts.json?tags=rating%3A{tags}'
         page = requests.get(endpoint, headers=head).json()
         posts = page['posts']
