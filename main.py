@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from discord.ext import commands
 load_dotenv('.env')
 
-vap = commands.Bot(command_prefix='v!')
+vap = commands.Bot(command_prefix='e!')
 
 cogs = ["cogs.eyebleach", "cogs.fun", "cogs.trollface"]
 
