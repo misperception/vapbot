@@ -10,7 +10,7 @@ cogs = ["cogs.eyebleach", "cogs.fun", "cogs.trollface"]
 @vap.command(name='vapreload')
 async def reload(ctx, arg):
   if str(ctx.author.id) == str(os.getenv('ID')):
-    if arg in cogs:
+    if arg in cogs: 
       await ctx.channel.send(f"🟧 Reloading {arg}...")
       try:
         vap.reload_extension(arg)
@@ -47,4 +47,4 @@ token = os.getenv('TOKEN')
 try:
   vap.run(token)
 except Exception as e:
-  print(f"Instance with token {token} couldnt load because of {e}")
+  print(f"Instance with token {token} couldn't load because of {e}")
