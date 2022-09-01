@@ -1,9 +1,12 @@
-import os, time
+import os, time, discord
 from dotenv import load_dotenv
 from discord.ext import commands
 load_dotenv('.env')
 
-vap = commands.Bot(command_prefix=os.getenv('PREFIX'))
+intents = discord.Intents.all()
+intents.presences = False
+
+vap = commands.Bot(command_prefix=os.getenv('PREFIX'), intents=intents)
 
 cogs = ["cogs.eyebleach", "cogs.fun", "cogs.trollface"]
 

@@ -14,7 +14,7 @@ class Fun(commands.Cog):
     @commands.command(name='roulette')
     async def roulette(self, ctx):
         if ctx.channel.is_nsfw():
-            author = ctx.author.display_name
+            author = ctx.author.mention
             shot = random.randrange(1,7)
             print(f"shot = {shot}")
             if shot < 6:
