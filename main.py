@@ -1,9 +1,9 @@
 import os, time
 from dotenv import load_dotenv
 from discord.ext import commands
-load_dotenv('.env')
+load_dotenv('exp.env')
 
-vap = commands.Bot(command_prefix='v!')
+vap = commands.Bot(command_prefix=os.getenv('PREFIX'))
 
 cogs = ["cogs.eyebleach", "cogs.fun", "cogs.trollface"]
 
@@ -42,7 +42,7 @@ async def on_ready():
 
 async def on_disconnect():
   print("Vaporeon has breached the jar.")
-
+  
 token = os.getenv('TOKEN')
 try:
   vap.run(token)

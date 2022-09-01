@@ -1,5 +1,6 @@
-from ast import Not
-import random, requests, time
+import asyncio
+import random, requests, discord
+import pandas as pd
 from discord.ext import commands
 with open("copypasta.txt",'r', encoding='utf-8') as texten:
   copypasta = texten.read()
@@ -19,9 +20,9 @@ class Fun(commands.Cog):
                 await ctx.channel.send("You fired a blank, you are safe now.")
             elif shot == 6:
                 await ctx.channel.send("You fired a shot, you lose, prepare for the second roulette.")
-                time.sleep(1)
+                await asyncio.sleep(1)
                 await ctx.channel.send("Preparing second roulette...")
-                time.sleep(2)
+                await asyncio.sleep(2)
                 roundtwo = random.randrange(1,7)
                 print(f"roundtwo = {roundtwo}")
                 if roundtwo < 6:
@@ -33,7 +34,7 @@ class Fun(commands.Cog):
                     currentpost = posts[random.randint(0,len(posts)-1)]
                     file = currentpost['file']
                     url = file['url']
-                    time.sleep(2)
+                    await asyncio.sleep(2)
                     try:
                         await ctx.send(url)
                     except:
@@ -62,9 +63,9 @@ class Fun(commands.Cog):
                     currentpost = posts[random.randint(0,len(posts)-1)]
                     file = currentpost['file']
                     url = file['url']
-                    time.sleep(1)
+                    await asyncio.sleep(1)
                     await ctx.channel.send("Brace for impact.")
-                    time.sleep(2)
+                    await asyncio.sleep(2)
                     try:
                         await ctx.send(url)
                     except:
@@ -104,38 +105,46 @@ class Fun(commands.Cog):
             2: 'questionable',
             3: 'explicit',
         }
-        tags = dict_rating.get(value)
-        dict_tag = { # available tags (more may be added in the future)
-            'none': "",
-            'vap' or 'vaporeon': "+vaporeon",
-            'esp' or 'espeon': "+espeon",
-            'umbreon': "+umbreon",
-            'flareon': "+flareon",
-            'jolt' or 'jolteon': "+jolteon",
-            'sylveon': "+sylveon",
-            'leaf' or 'leafeon': "+leafeon",
-            'glaceon': "+glaceon",
-            'eevee': "+eevee",
-            'eeveelution': "+eeveelution",
-            'poke' or 'pokemon': "+pokémon"
+        dict_color = {
+            1: 0x56ff30,
+            2: 0xffb730,
+            3: 0xff3030
         }
+        rating = dict_rating.get(value)
+        dict_tag = pd.read_csv('tags.csv').to_dict(orient='list')
+        dict_aliases = pd.read_csv('alias.csv').to_dict(orient='list')
         try:
-            tags = tags + dict_tag.get(tag) # addition of dict_tag tags according to the argument provided (if at all)
+            t = dict_tag.get(tag)
+            tags = rating + t[0] # addition of dict_tag tags according to the argument provided (if at all)
         except:
-            if tag != 'help':
-                await ctx.channel.send(f'{tag} is not a valid tag, please make sure you are using one of the valid tags')
-                return
-            else:
-                await ctx.send('Tags:')
-                await ctx.send(f'``{dict_tag}``')
-                return
+            try:
+                a = dict_aliases.get(tag)
+                tags = rating + a[0] # checks for aliases 
+            except:
+                if tag != 'help':
+                    await ctx.channel.send(f'{tag} is not a valid tag, please make sure you are using one of the valid tags')
+                    return
+                else:
+                    await ctx.send('Tags:')
+                    await ctx.send(f'``{dict_tag}``')
+                    return
         endpoint = f'https://e621.net/posts.json?tags=rating%3A{tags}'
         page = requests.get(endpoint, headers=head).json()
         posts = page['posts']
         currentpost = posts[random.randint(0, len(posts) - 1)]
         file = currentpost['file']
+        posttags = currentpost['tags']
+        gentags = posttags['general']
+        usetags = 'Tags: '
+        for tag in gentags:
+            usetags = usetags + tag + '|'
+        usetags = usetags[:-1]
+        usetags = usetags.replace('|', ', ')
         url = file['url']
-        await ctx.send(url)   
+        imageembed = discord.Embed(color=dict_color[value], title=rating.capitalize())
+        imageembed.set_image(url=url)
+        imageembed.set_footer(text=usetags, icon_url='https://e621.net/favicon.ico')
+        await ctx.send(embed=imageembed)
 
 
 def setup(bot):

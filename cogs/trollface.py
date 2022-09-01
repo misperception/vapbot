@@ -30,11 +30,10 @@ class VaporeonPorn(commands.Cog, name="Trolling"):
 
     @commands.command(name='vappost')
     async def vappost(self, ctx, arg):
-        try:
-            arg
-        except:
-            await ctx.channel.send("Please use the correct format. (v!vappost {number of images})")
+        if not ctx.channel.is_nsfw(): # exit clause
+            await ctx.send("Make sure to run this command on a NSFW channel.")
             return
+
         try:
             int(arg)
         except:
@@ -42,25 +41,23 @@ class VaporeonPorn(commands.Cog, name="Trolling"):
             return
         if int(arg) <= 0:
             await ctx.channel.send("Argument is lower or equal to zero, please choose a positive integer.")
-        elif int(arg) >> 100:
-            await ctx.channel.send("The second argument is higher than 100, please choose a lower number")
-        else:
-            baseURL = "https://e621.net/posts.json?tags=Vaporeon+-animated&limit={number}&page={page}"
-            endpoint = baseURL.format(number = arg, page = str(random.randrange(1,201)))
-            head = {'User-Agent': 'VaporeonBot 1.0.0'}
-            r = requests.get(endpoint, headers=head)
-            jsonpage = r.json()
-            posts = jsonpage['posts']
-            n = len(posts)
-            for index in range(n):
-                print(index + 1)
-                currentpost = posts[index]
-                file = currentpost['file']
-                url = file['url']
-                try:
-                    await ctx.channel.send(url)
-                except:
-                    print("couldn't send url")
+            return
+        baseURL = "https://e621.net/posts.json?tags=Vaporeon+-animated&limit={number}"
+        endpoint = baseURL.format(number = arg)
+        head = {'User-Agent': 'VaporeonBot 1.0.0'}
+        r = requests.get(endpoint, headers=head)
+        jsonpage = r.json()
+        posts = jsonpage['posts']
+        n = len(posts)
+        for index in range(n):
+            print(index + 1)
+            currentpost = posts[index]
+            file = currentpost['file']
+            url = file['url']
+            try:
+                await ctx.channel.send(url)
+            except:
+                print("couldn't send url")
 
 def setup(bot):
     bot.add_cog(VaporeonPorn(bot))
