@@ -9,8 +9,6 @@ This bot serves two purposes: the first one is to make something I can fear afte
 ## Neat, but how do I set it up?
 If you want to include this bot into a server of your own, please do so using this link: https://discord.com/api/oauth2/authorize?client_id=942808901747900467&permissions=8&scope=bot
 
-<<<<<<< HEAD
 If you want to include this bot into a server, but you aren't the owner or an administrator, please don't. Like seriously. Don't. Ever. Do. That. Specially regarding this specific bot. Don't even ask for it. I mean even if you just wanted furry porn there surely are better bots for that purpose, so don't add this bot, please ~~I'm literally begging you at this point.~~
 =======
 If you want to include this bot into a server, but you aren't the owner or an administrator, please don't. Like seriously. Don't. Ever. Do. That. Specially regarding this specific bot. Don't even ask for it. I mean even if you just wanted furry porn there surely are better bots for that purpose, so don't add this bot, please ~~I'm literally begging you at this point.~~
->>>>>>> c323f30419668c4efa375221d14a40b6e00086af
