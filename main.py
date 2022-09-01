@@ -35,7 +35,7 @@ async def on_ready():
   time.sleep(3)
   for cog in cogs:
     try:
-      await vap.load_extension(cog)
+      vap.load_extension(cog)
       time.sleep(0.5)
       print("🟩 " + cog +" was loaded successfully!")
     except Exception as e:
