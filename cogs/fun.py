@@ -14,19 +14,20 @@ class Fun(commands.Cog):
     @commands.command(name='roulette')
     async def roulette(self, ctx):
         if ctx.channel.is_nsfw():
+            author = ctx.author.display_name
             shot = random.randrange(1,7)
             print(f"shot = {shot}")
             if shot < 6:
-                await ctx.channel.send("You fired a blank, you are safe now.")
+                await ctx.channel.send(f"{author}, you fired a blank, you are safe now.")
             elif shot == 6:
-                await ctx.channel.send("You fired a shot, you lose, prepare for the second roulette.")
+                await ctx.channel.send(f"{author}, you fired a shot, you lose, prepare for the second roulette.")
                 await asyncio.sleep(1)
                 await ctx.channel.send("Preparing second roulette...")
                 await asyncio.sleep(2)
                 roundtwo = random.randrange(1,7)
                 print(f"roundtwo = {roundtwo}")
                 if roundtwo < 6:
-                    await ctx.channel.send("You fired a blank, loading normal porn...")
+                    await ctx.channel.send(f"{author}, you fired a blank, loading normal porn...")
                     endpoint = "https://e621.net/posts.json?tags=-animated+rating:explicit+-vore+-anal_vore+-urine+-feces+-diaper"
                     r = requests.get(endpoint, headers=head)
                     jsonpage = r.json()
@@ -52,9 +53,9 @@ class Fun(commands.Cog):
                             ctx.channel.send("The bullet got stuck! Lucky!")
 
                 elif roundtwo == 6:
-                    await ctx.channel.send("You fired a shot, loading degeneracy... hope you still have faith in humanity after this...")
+                    await ctx.channel.send(f"{author}, you fired a shot, loading degeneracy... hope you still have faith in humanity after this...")
                     baseURL = "https://e621.net/posts.json?tags={tags}+-animated"
-                    tag = ["watersports", "omorashi", "scat", "gore", "vore", "anal_prolapse", "anal_vore", "diaper", "intersex+breasts", "ear_penetration"]
+                    tag = ["watersports", "omorashi", "scat", "gore", "vore", "anal_prolapse", "anal_vore", "diaper", "intersex+breasts", "ear_penetration", "fart"]
                     randomn = random.randrange(1,len(tag))
                     endpoint = baseURL.format(tags = tag[randomn - 1])
                     r = requests.get(endpoint, headers=head)
