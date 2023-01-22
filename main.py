@@ -1,6 +1,7 @@
 import os, time, discord
 from dotenv import load_dotenv
 from discord.ext import commands
+
 load_dotenv('.env')
 
 intents = discord.Intents.all()
@@ -12,20 +13,24 @@ cogs = ["cogs.eyebleach", "cogs.fun", "cogs.trollface"]
 
 @vap.command(name='vapreload')
 async def reload(ctx, arg):
-  if str(ctx.author.id) == str(os.getenv('ID')):
-    if arg in cogs: 
-      await ctx.channel.send(f"🟧 Reloading {arg}...")
-      try:
-        vap.reload_extension(arg)
-        time.sleep(1)
-        await ctx.channel.send(f"🟩 {arg} reloaded!")
-      except Exception as e:
-        print(f"{arg} couldn't be reloaded due to " + str(e))
-        await ctx.channel.send(f"🟥 {arg} couldn't be reloaded. Check the console for details.")
-    else:
-      await ctx.channel.send("The argument is not a valid module")
-  else:
+  if not str(ctx.author.id) == str(os.getenv('ID')):
     await ctx.channel.send("Maybe this is meant for someone else...")
+    return
+  else: pass
+
+  if not arg in cogs: 
+    await ctx.channel.send("The argument is not a valid module")
+    return
+  else: pass
+  
+  await ctx.channel.send(f"🟧 Reloading {arg}...")
+  try:
+    vap.reload_extension(arg)
+    time.sleep(1)
+    await ctx.channel.send(f"🟩 {arg} reloaded!")
+  except Exception as e:
+    print(f"{arg} couldn't be reloaded due to " + str(e))
+    await ctx.channel.send(f"🟥 {arg} couldn't be reloaded. Check the console for details.")
 
 @vap.event
 async def on_ready():
@@ -47,6 +52,7 @@ async def on_disconnect():
   print("Vaporeon has breached the jar.")
   
 token = os.getenv('TOKEN')
+
 try:
   vap.run(token)
 except Exception as e:
