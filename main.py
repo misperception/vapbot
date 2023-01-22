@@ -9,7 +9,7 @@ intents.presences = False
 
 vap = commands.Bot(command_prefix=os.getenv('PREFIX'), intents=intents)
 
-cogs = ["cogs.eyebleach", "cogs.fun", "cogs.trollface"]
+cogs = ["cogs.fun", "cogs.trollface"]
 
 @vap.command(name='vapreload')
 async def reload(ctx, arg):

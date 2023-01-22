@@ -1,5 +1,4 @@
-import asyncio
-import random, requests, discord
+import random, requests, discord, asyncio
 import pandas as pd
 from discord.ext import commands
 with open("copypasta.txt",'r', encoding='utf-8') as texten:
@@ -147,6 +146,22 @@ class Fun(commands.Cog):
         imageembed.set_footer(text=usetags, icon_url='https://e621.net/favicon.ico')
         await ctx.send(embed=imageembed)
 
+class Faith_In_Humanity(commands.Cog, name='Faith in humanity'):
+
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.command(name='eyebleach')
+    async def eyebleach(self, ctx):
+        endpoint = "https://e621.net/posts/random.json?tags=vaporeon+rating:safe+-breasts&limit=10"
+        head = {'User-Agent': 'VaporeonBot 1.0.0'}
+        r = requests.get(endpoint, headers=head)
+        url = r.json().get("post").get("file").get("url")
+        try:
+            await ctx.send(url)
+        except:
+            await ctx.send("For whatever reason, *ahem, ahem, check the console* the image couldn't be sent. Sucks to be you, huh?")
 
 def setup(bot):
     bot.add_cog(Fun(bot))
+    bot.add_cog(Faith_In_Humanity(bot))
