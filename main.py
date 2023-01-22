@@ -37,7 +37,7 @@ async def on_ready():
   print("Loading up VapOS 1.2.0...")
   time.sleep(1)
   print("Loading modules...")
-  time.sleep(3)
+  time.sleep(1)
   for cog in cogs:
     try:
       vap.load_extension(cog)
