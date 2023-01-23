@@ -2,3 +2,4 @@ Include
 Scripts
 venv
 exp.env
+*.pyc
