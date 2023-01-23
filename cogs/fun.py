@@ -1,4 +1,5 @@
-import random, requests, discord, asyncio
+import random, requests, asyncio
+from cogs.lib.vapbotutils import ParseUtils
 import pandas as pd
 from discord.ext import commands
 from discord import app_commands
@@ -7,29 +8,6 @@ with open("copypasta.txt",'r', encoding='utf-8') as texten:
 with open("copypastaes.txt",'r', encoding='utf-8') as textes:
   copypastaes = textes.read()
 head = {'User-Agent': 'VapBot 1.2.0'}
-
-class ParseUtils:
-    dict_rating = {
-            's': 'safe',
-            'q': 'questionable',
-            'e': 'explicit'
-        }
-    dict_color = {
-            's': 0x56ff30,
-            'q': 0xffb730,
-            'e': 0xff3030
-        }
-
-    async def EmbedMaker(post, ctx):
-        rating = post.get('post').get('rating')
-        url = post.get('post').get('file').get('url')
-        tags = post.get('post').get('tags').get('general')
-        usetags = 'Tags: ' + ', '.join(tags)
-        
-        imageembed = discord.Embed(color=ParseUtils.dict_color[rating], title=ParseUtils.dict_rating.get(rating).capitalize())
-        imageembed.set_image(url=url)
-        imageembed.set_footer(text=usetags, icon_url='https://e621.net/favicon.ico')
-        await ctx.send(embed=imageembed)
 
 class Fun(commands.Cog):
     def __init__(bot, self):

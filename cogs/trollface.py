@@ -1,30 +1,35 @@
 import requests, discord
 from discord.ext import commands
+from discord import app_commands
+from cogs.lib.vapbotutils import ParseUtils
 
 class VaporeonPorn(commands.Cog, name="Trolling"):
 
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name='vapsend')
+    @commands.hybrid_command(name='vapsend', description='[NSFW] Sends a number of Vaporeon images to a target.')
+    @app_commands.rename(arg1='user', arg2='number')
+    @app_commands.describe(arg1='User to whom DM the images:', arg2='Number of images to DM:')
     async def vapsend(self, ctx, arg1: discord.Member, arg2: int):
         if arg2 <= 0:
-            await ctx.channel.send(f"{arg2} is lower or equal to zero.")
+            await ctx.send(f"{arg2} is lower or equal to zero.")
             return
         else: pass
 
         endpoint = "https://e621.net/posts/random.json?tags=Vaporeon+-animated"
         head = {'User-Agent': 'VaporeonBot 1.0.0'}
-
+        await ctx.send('Sending images...')
         for i in range(arg2):
-            r = requests.get(endpoint, headers=head)
-            url = r.json().get("post").get("file").get("url")
+            r = requests.get(endpoint, headers=head).json()
             try:
-                await arg1.send(url)
+                await ParseUtils.EmbedMaker(r,arg1)
             except:
                 print(f"couldn't send URL in attempt {i+1}")
 
-    @commands.command(name='vappost')
+    @commands.hybrid_command(name='vappost', description='[NSFW] Posts a number of Vaporeon images to the current channel.')
+    @app_commands.rename(arg='number')
+    @app_commands.describe(arg='Number of images to post:')
     async def vappost(self, ctx, arg: int):
         if not ctx.channel.is_nsfw(): 
             await ctx.send("Make sure to run this command on a NSFW channel.")
@@ -32,7 +37,7 @@ class VaporeonPorn(commands.Cog, name="Trolling"):
         else: pass
 
         if arg <= 0:
-            await ctx.channel.send("Argument is lower or equal to zero, please choose a positive integer.")
+            await ctx.send("Argument is lower or equal to zero, please choose a positive integer.")
             return
         else: pass
 
@@ -40,10 +45,9 @@ class VaporeonPorn(commands.Cog, name="Trolling"):
         head = {'User-Agent': 'VaporeonBot 1.0.0'}
 
         for i in range(arg):
-            r = requests.get(endpoint, headers=head)
-            url = r.json().get("post").get("file").get("url")
+            r = requests.get(endpoint, headers=head).json()
             try:
-                await ctx.channel.send(url)
+                await ParseUtils.EmbedMaker(r,ctx)
             except:
                 print(f"couldn't send url in attempt {i+1}")
 
