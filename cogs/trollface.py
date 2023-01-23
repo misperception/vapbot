@@ -47,5 +47,5 @@ class VaporeonPorn(commands.Cog, name="Trolling"):
             except:
                 print(f"couldn't send url in attempt {i+1}")
 
-def setup(bot):
-    bot.add_cog(VaporeonPorn(bot))
+async def setup(bot):
+    await bot.add_cog(VaporeonPorn(bot))
