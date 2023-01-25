@@ -172,7 +172,7 @@ class Roulette(commands.Cog):
                 await ctx.send(f'Round {roundn}:')
         else: Actions.disable()
 
-    @commands.hybrid_group(fallback='create', description='Creates a roulette group. Add \'hard\' afterwards to activate hard mode.')
+    @commands.hybrid_group(fallback='create', description='[NSFW] Creates a roulette group. Add \'hard\' afterwards to activate hard mode.')
     @app_commands.describe(mode='Mode to use during the session. Defaults to \'normal\'.')
     @app_commands.choices(mode=[
         app_commands.Choice(name='normal', value='normal'),
@@ -195,7 +195,7 @@ class Roulette(commands.Cog):
         Roulette.mode = mode
         await ctx.send('Party created! Type \'/roulette join\' to join!')
 
-    @roulette.command(name='join', description='Joins you to a session queue.')
+    @roulette.command(name='join', description='[NSFW] Joins you to a session queue.')
     async def add(self,ctx):
         if not ctx.channel.is_nsfw():
             await ctx.send('Make sure to run this in a NSFW channel')
@@ -211,7 +211,7 @@ class Roulette(commands.Cog):
         Roulette.party.append(ctx.author)
         await ctx.send('Joined the party!')
 
-    @roulette.command(name='start', description='Starts a roulette session.')
+    @roulette.command(name='start', description='[NSFW] Starts a roulette session.')
     async def start(self, ctx):
         if not ctx.channel.is_nsfw():
             await ctx.send('Make sure to run this in a NSFW channel')
@@ -225,7 +225,7 @@ class Roulette(commands.Cog):
         Roulette.sessionOngoing = True
         await Roulette.RouletteMain(ctx)
         
-    @roulette.command(name='finish', description='Ends a roulette session.')
+    @roulette.command(name='finish', description='[NSFW] Ends a roulette session.')
     async def finish(self,ctx):
         if not ctx.channel.is_nsfw():
             await ctx.send('Make sure to run this in a NSFW channel')
@@ -238,6 +238,16 @@ class Roulette(commands.Cog):
         await ctx.send('Session finished!')
         Roulette.sessionOngoing = False
 
+    @roulette.command(name='help', description='[NSFW] Info about the /roulette command')
+    async def help(self,ctx):
+        embed = discord.Embed(
+            color=0x1770fe,
+            title='/roulette Help',
+            
+        )
+        embed.add_field(name='What is this?', inline=True, value='/roulette is a command used to play Russian roulette. This roulette consists of a certain chance of getting a porn image from e621.net, with an even lesser chance of getting degeneracy.\nYou create a session with `/roulette create`, and then people join with `/roulette join`. When everyone is ready, use `/roulette start` to begin the session.\n \nYou can declare a mode in `/roulette create`, that is detailed on the following section.')
+        embed.add_field(name='Modes', inline=True, value='`normal`: 1/6 chance of porn, 1/36 chance of REALLY messed up porn.\n\n`hard`: It behaves like a real Russian roulette, each shot gets you closer to a bullet, each bullet gets you closer to REALLY messed up porn.')
+        await ctx.send(embed=embed)
 async def setup(bot):
     await bot.add_cog(Fun(bot))
     await bot.add_cog(Faith_In_Humanity(bot))
