@@ -18,12 +18,10 @@ class VaporeonPorn(commands.Cog, name="Trolling"):
         else: pass
 
         endpoint = "https://e621.net/posts/random.json?tags=Vaporeon+-animated"
-        head = {'User-Agent': 'VaporeonBot 1.0.0'}
         await ctx.send('Sending images...')
         for i in range(arg2):
-            r = requests.get(endpoint, headers=head).json()
             try:
-                await ParseUtils.EmbedMaker(r,arg1)
+                await ParseUtils.EmbedMaker(endpoint,arg1)
             except:
                 print(f"couldn't send URL in attempt {i+1}")
 
@@ -42,12 +40,9 @@ class VaporeonPorn(commands.Cog, name="Trolling"):
         else: pass
 
         endpoint = "https://e621.net/posts/random.json?tags=Vaporeon+-animated"
-        head = {'User-Agent': 'VaporeonBot 1.0.0'}
-
         for i in range(arg):
-            r = requests.get(endpoint, headers=head).json()
             try:
-                await ParseUtils.EmbedMaker(r,ctx)
+                await ParseUtils.EmbedMaker(endpoint,ctx)
             except:
                 print(f"couldn't send url in attempt {i+1}")
 

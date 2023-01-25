@@ -2,7 +2,7 @@ import os, time, discord
 from dotenv import load_dotenv
 from discord.ext import commands
 
-load_dotenv('.env')
+load_dotenv('exp.env')
 token = os.getenv('TOKEN')
 
 intents = discord.Intents.all()
