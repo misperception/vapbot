@@ -170,7 +170,9 @@ class Roulette(commands.Cog):
                 await ctx.send('Round over.')
                 await asyncio.sleep(2)
                 await ctx.send(f'Round {roundn}:')
-        else: Actions.disable()
+        else:
+            await ctx.send('Session over.') 
+            Actions.disable()
 
     @commands.hybrid_group(fallback='create', description='[NSFW] Creates a roulette group. Add \'hard\' afterwards to activate hard mode.')
     @app_commands.describe(mode='Mode to use during the session. Defaults to \'normal\'.')
@@ -237,6 +239,9 @@ class Roulette(commands.Cog):
         else: pass
         await ctx.send('Session finished!')
         Roulette.sessionOngoing = False
+        Roulette.mode = ''
+        Roulette.party = []
+        Roulette.partyCreation = False
 
     @roulette.command(name='help', description='[NSFW] Info about the /roulette command.')
     async def help(self,ctx):
