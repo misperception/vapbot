@@ -238,14 +238,18 @@ class Roulette(commands.Cog):
         await ctx.send('Session finished!')
         Roulette.sessionOngoing = False
 
-    @roulette.command(name='help', description='[NSFW] Info about the /roulette command')
+    @roulette.command(name='help', description='[NSFW] Info about the /roulette command.')
     async def help(self,ctx):
+        if not ctx.channel.is_nsfw():
+            await ctx.send('Make sure to run this in a NSFW channel')
+            return
+        else: pass
         embed = discord.Embed(
             color=0x1770fe,
             title='/roulette Help',
             
         )
-        embed.add_field(name='What is this?', inline=True, value='/roulette is a command used to play Russian roulette. This roulette consists of a certain chance of getting a porn image from e621.net, with an even lesser chance of getting degeneracy.\nYou create a session with `/roulette create`, and then people join with `/roulette join`. When everyone is ready, use `/roulette start` to begin the session.\n \nYou can declare a mode in `/roulette create`, that is detailed on the following section.')
+        embed.add_field(name='What is this?', inline=True, value='/roulette is a command used to play Russian roulette. This roulette consists of a certain chance of getting a porn image from e621.net, with an even lesser chance of getting degeneracy.\n\nYou create a session with `/roulette create`, and then people join with `/roulette join`. When everyone is ready, use `/roulette start` to begin the session.\n\nYou can declare a mode in `/roulette create`, that is detailed on the following section.')
         embed.add_field(name='Modes', inline=True, value='`normal`: 1/6 chance of porn, 1/36 chance of REALLY messed up porn.\n\n`hard`: It behaves like a real Russian roulette, each shot gets you closer to a bullet, each bullet gets you closer to REALLY messed up porn.')
         await ctx.send(embed=embed)
 async def setup(bot):
