@@ -2,4 +2,4 @@ Include
 Scripts
 venv
 exp.env
-*.pyc
+__pycache__
