@@ -2,7 +2,7 @@ import os, time, discord
 from dotenv import load_dotenv
 from discord.ext import commands
 
-load_dotenv('.env')
+load_dotenv('exp.env')
 token = os.getenv('TOKEN')
 
 intents = discord.Intents.all()
@@ -37,6 +37,7 @@ async def reload(ctx, arg):
   await ctx.send(f"🟧 Reloading {arg}...")
   try:
     await vap.reload_extension(arg)
+    await vap.tree.sync()
     time.sleep(1)
     await ctx.send(f"🟩 {arg} reloaded!")
   except Exception as e:
@@ -45,7 +46,7 @@ async def reload(ctx, arg):
 
 @vap.event
 async def on_ready():
-  print("Loading up VapOS 1.2.0...")
+  print("Loading up VapOS 1.3.0...")
   time.sleep(1)
   print("Loading modules...")
   time.sleep(1)
@@ -56,7 +57,12 @@ async def on_ready():
     except Exception as e:
       print("🟥 " + cog +" couldn't load due to " + str(e))
     time.sleep(0.2)
-  await vap.tree.sync()
+  print("🟦 Loading command tree...")
+  try:
+    await vap.tree.sync()
+    print("🟩 Command tree finished loading!")
+  except TimeoutError:
+    print("🟥 Command tree took too long to load!")
   time.sleep(2)
   print("Loading complete! Also did you know that in terms of ma-")
 

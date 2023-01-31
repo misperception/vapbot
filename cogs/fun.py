@@ -81,21 +81,28 @@ class Roulette(commands.Cog):
         roundn = 1
 
         class Actions(discord.ui.View):
+            user : discord.User
             shot = False
             spinned = False
             @discord.ui.button(label='Shoot!',style=discord.ButtonStyle.danger)
             async def shoot(self, interaction: discord.Interaction, button: discord.ui.Button):
-                self.shot = True
-                await interaction.response.send_message('*click*',ephemeral=True,delete_after=0.8)
-                self.stop()
+                if self.user != interaction.user:
+                    await interaction.response.send_message('It\'s not your turn buddy',ephemeral=True,delete_after=0.8)
+                else:
+                    self.shot = True
+                    await interaction.response.send_message('*click*',ephemeral=True,delete_after=0.8)
+                    self.stop()
             
             if Roulette.mode == 'hard':
                 @discord.ui.button(label='Spin',style=discord.ButtonStyle.primary)
                 async def spin(self, interaction: discord.Interaction, button: discord.ui.Button):
-                    await interaction.response.send_message('Spinned the barrel.')
-                    self.spinned = True
-                    self.spin.disabled = True
-                    await self.message.edit(view=self)
+                    if self.user != interaction.user:
+                        await interaction.response.send_message('It\'s not your turn buddy',ephemeral=True,delete_after=0.8)
+                    else:
+                        await interaction.response.send_message('Spinned the barrel.')
+                        self.spinned = True
+                        self.spin.disabled = True
+                        await self.message.edit(view=self)
             
             async def disable(self):
                 for child in self.children:
@@ -118,6 +125,7 @@ class Roulette(commands.Cog):
         while Roulette.sessionOngoing == True:
             for member in Roulette.party:
                 actions = Actions()
+                actions.user = member
                 await asyncio.sleep(1)
                 message = await ctx.channel.send(f'{member.mention}, it\'s your turn.', view=actions)
                 actions.message = message
@@ -126,53 +134,51 @@ class Roulette(commands.Cog):
                 if actions.spinned == True:
                     HardModeR1 = random.randint(1,6)
                 else: pass
-                if (Roulette.mode == 'hard'):
-                    if HardModeR1 < 6:
-                        await message.reply('No bullet was fired.')
-                        HardModeR1+=1
-                        await asyncio.sleep(1)
-                        continue
-                    else: pass
 
-                    chance = await message.reply('You shot yourself. A second shot will decide your fate...')
+                async def miss():
+                    await message.reply('No bullet was fired.')
                     await asyncio.sleep(1)
 
-                    if HardModeR2 < 6:
-                        await chance.reply('You were merely graced by the bullet. You experience minor pain.')
-                        HardModeR2+= 1
-                        await asyncio.sleep(1)
-                        await post(ctx)
-                        await asyncio.sleep(3)
-                    else:
-                        await chance.reply('You were impacted fully by the bullet. You experience severe pain.')
-                        HardModeR2 = random.randint(1,6)
-                        await asyncio.sleep(1)
-                        await ctx.channel.send('While agonizing, you see things no human should.')
-                        await asyncio.sleep(1)
-                        await post(ctx,mode='degen')
-                        await asyncio.sleep(5)
+                async def hit():
+                    chance = await message.reply('You shot yourself. A second shot will decide your fate...')
+                    await asyncio.sleep(1)
+                    await chance.reply('You were merely graced by the bullet. You experience minor pain.')
+                    await asyncio.sleep(1)
+                    await post(ctx)
+                    await asyncio.sleep(3)
 
+                async def hitcrit():
+                    chance = await message.reply('You shot yourself. A second shot will decide your fate...')
+                    await asyncio.sleep(1)
+                    await chance.reply('You were impacted fully by the bullet. You experience severe pain.')
+                    await asyncio.sleep(1)
+                    await ctx.channel.send('While agonizing, you see things no human should.')
+                    await asyncio.sleep(1)
+                    await post(ctx,mode='degen')
+                    await asyncio.sleep(5)
+                    
+                if (Roulette.mode == 'hard'):
+                    if HardModeR1 < 6:
+                        HardModeR1+=1
+                        await miss()
+                        continue
+                    else: pass
+                    if HardModeR2 < 6:
+                        await hit()
+                        HardModeR2+= 1
+                    else:
+                        HardModeR2 = random.randint(1,6)
+                        await hitcrit()
                     HardModeR1 = random.randint(1,6)                  
                 else:
                     if random.randint(1,6) < 6:
-                        await message.reply('No bullet was fired.')
-                        await asyncio.sleep(1)
+                        await miss()
                         continue
                     else: pass
-                    chance = await message.reply('You shot yourself. A second shot will decide your fate...') 
-                    await asyncio.sleep(1)
                     if random.randint(1,6) == 6:
-                        await chance.reply('You were impacted fully by the bullet. You experience severe pain.')
-                        await asyncio.sleep(1)
-                        await ctx.channel.send('While agonizing, you see things no human should.')
-                        await asyncio.sleep(1)
-                        await post(ctx, mode='degen')
-                        await asyncio.sleep(5)
+                        await hitcrit()
                     else:
-                        await chance.reply('You were merely graced by the bullet. You experience minor pain.')
-                        await asyncio.sleep(1)
-                        await post(ctx)
-                        await asyncio.sleep(3)      
+                        await hit()     
             else:
                 roundn+=1
                 await ctx.channel.send('Round over.')
@@ -232,7 +238,7 @@ class Roulette(commands.Cog):
             await ctx.send('Make sure to run this in a NSFW channel')
             return
         elif ctx.author == Roulette.sessionMaster:
-            await ctx.send('You are the owner of the party! Maybe you meant `/roulette cancel`?')
+            await ctx.send('You are the owner of the party! Maybe you meant `/roulette cancel` or `/roulette finish`?')
             return
         else: pass
         try:
@@ -329,6 +335,7 @@ class Roulette(commands.Cog):
         embed.add_field(inline=False,name='Leader',value=Roulette.sessionMaster.mention)
         embed.add_field(inline=False,name='Members',value=', '.join([member.mention for member in [Roulette.party.remove(Roulette.sessionMaster)]]))
         await ctx.send(embed=embed)
+    
     @roulette.command(name='help', description='[NSFW] Info about the `/roulette` command.')
     async def help(self,ctx):
         if not ctx.channel.is_nsfw():
