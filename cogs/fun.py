@@ -183,6 +183,7 @@ class Roulette(commands.Cog):
                 roundn+=1
                 await ctx.channel.send('Round over.')
                 await asyncio.sleep(2)
+
                 if not Roulette.sessionOngoing == True:
                     await ctx.channel.send('Session over.')
                     return
@@ -316,6 +317,7 @@ class Roulette(commands.Cog):
         Roulette.mode = ''
         Roulette.party = []
         Roulette.partyCreation = False
+
         Roulette.sessionMaster = None
 
     @roulette.command(name='info-list', description='[NSFW] Lists info about the session.')
