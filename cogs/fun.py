@@ -404,6 +404,7 @@ class Roulette(commands.Cog):
         Roulette.sessionOngoing = False
         Roulette.party = []
         Roulette.partyCreation = False
+
         Roulette.sessionMaster = None
         Roulette.lives = 0
 
