@@ -73,6 +73,7 @@ class Roulette(commands.Cog):
 
     party = []
     mode = ''
+    lives = 0
     partyCreation = False
     sessionOngoing = False
     sessionMaster: discord.Member
@@ -109,6 +110,10 @@ class Roulette(commands.Cog):
                     child.disabled = True
                 await self.message.edit(view=self)
 
+            async def on_timeout(self):
+                await ctx.send('You timed out you fucking pussy, your turn has been completed for you.')
+                self.stop()
+
         async def post(ctx, mode='normal'):
             degentags = ["watersports", "omorashi", "scat", "gore", "vore", "anal_prolapse", "anal_vore", "diaper", "intersex+breasts", "ear_penetration", "fart"]
             endpoint = {
@@ -122,70 +127,138 @@ class Roulette(commands.Cog):
         HardModeR2 = random.randint(1,6)
         await ctx.send('Starting the session...')
         await asyncio.sleep(1)
-        while Roulette.sessionOngoing == True:
-            for member in Roulette.party:
-                actions = Actions()
-                actions.user = member
-                await asyncio.sleep(1)
-                message = await ctx.channel.send(f'{member.mention}, it\'s your turn.', view=actions)
-                actions.message = message
-                await actions.wait()
-                await actions.disable()
-                if actions.spinned == True:
-                    HardModeR1 = random.randint(1,6)
-                else: pass
 
-                async def miss():
+        async def miss():
                     await message.reply('No bullet was fired.')
                     await asyncio.sleep(1)
 
-                async def hit():
-                    chance = await message.reply('You shot yourself. A second shot will decide your fate...')
-                    await asyncio.sleep(1)
-                    await chance.reply('You were merely graced by the bullet. You experience minor pain.')
-                    await asyncio.sleep(1)
-                    await post(ctx)
-                    await asyncio.sleep(3)
+        async def hit():
+            chance = await message.reply('You shot yourself. A second shot will decide your fate...')
+            await asyncio.sleep(1)
+            await chance.reply('You were merely graced by the bullet. You experience minor pain.')
+            await asyncio.sleep(1)
+            await post(ctx)
+            await asyncio.sleep(3)
 
-                async def hitcrit():
-                    chance = await message.reply('You shot yourself. A second shot will decide your fate...')
-                    await asyncio.sleep(1)
-                    await chance.reply('You were impacted fully by the bullet. You experience severe pain.')
-                    await asyncio.sleep(1)
-                    await ctx.channel.send('While agonizing, you see things no human should.')
-                    await asyncio.sleep(1)
-                    await post(ctx,mode='degen')
-                    await asyncio.sleep(5)
-                    
-                if (Roulette.mode == 'hard'):
-                    if HardModeR1 < 6:
-                        HardModeR1+=1
-                        await miss()
-                        continue
-                    else: pass
-                    if HardModeR2 < 6:
-                        await hit()
-                        HardModeR2+= 1
-                    else:
-                        HardModeR2 = random.randint(1,6)
-                        await hitcrit()
-                    HardModeR1 = random.randint(1,6)                  
-                else:
-                    if random.randint(1,6) < 6:
-                        await miss()
-                        continue
-                    else: pass
-                    if random.randint(1,6) == 6:
-                        await hitcrit()
-                    else:
-                        await hit()     
+        async def hitcrit():
+            chance = await message.reply('You shot yourself. A second shot will decide your fate...')
+            await asyncio.sleep(1)
+            await chance.reply('You were impacted fully by the bullet. You experience severe pain.')
+            await asyncio.sleep(1)
+            await ctx.channel.send('While agonizing, you see things no human should.')
+            await asyncio.sleep(1)
+            await post(ctx,mode='degen')
+            await asyncio.sleep(5)
+        
+        Players = {}
+        playerlist = Roulette.party
+        def add_p(p):
+            Players[p.name] = {
+                'user': p,
+                'mention': p.mention,
+                'lives': Roulette.lives,
+                'images': 0,
+                'degenimg': 0,
+            }
+        for p in playerlist:
+            add_p(p)
+        while Roulette.sessionOngoing == True:
+
+            if len(Roulette.party) > len(playerlist):
+                for p in list(set(Roulette.party) - set(playerlist)):
+                    add_p(p)
+                Roulette.party = playerlist
+            elif len(Roulette.party) < len(playerlist):
+                for p in list(set(playerlist) - set(Roulette.party)):
+                    Players.pop(p.name)
+                Roulette.party = playerlist
+            else: pass
+
+            for member in playerlist:
+                actions = Actions()
+                actions.user = member
+
+                player = Players[member.name]
+                await asyncio.sleep(1)
+                message = await ctx.channel.send(f'{member.mention}, it\'s your turn.', view=actions)
+                if Roulette.mode=='battle-royale': await message.edit(content=message.content+' ('+'❤️'*player['lives']+'🖤'*(Roulette.lives-player['lives'])+')')
+                actions.message = message
+                await actions.wait()
+                await actions.disable()
+                
+                if actions.spinned == True:
+                    HardModeR1 = random.randint(1,6)
+
+                else: pass  
+                match Roulette.mode:
+                    case 'hard':
+                        if HardModeR1 < 6:
+                            HardModeR1+=1
+                            await miss()
+                            continue
+                        else:
+                            if HardModeR2 < 6:
+                                await hit()
+                                HardModeR2+= 1
+                                player['images'] += 1
+                            else:
+                                HardModeR2 = random.randint(1,6)
+                                await hitcrit()
+                                player['degenimg'] += 1
+                            HardModeR1 = random.randint(1,6)                  
+                    case 'normal':
+                        if random.randint(1,6) < 6:
+                            await miss()
+                            continue
+                        else: pass
+                        if random.randint(1,6) == 6:
+                            await hitcrit()
+                            player['degenimg'] += 1
+                        else:
+                            await hit()     
+                            player['images'] += 1
+                    case 'battle-royale':
+                        if random.randint(1,6) < 6:
+                            await miss()
+                            continue
+                        else: pass
+                        if random.randint(1,6) == 6:
+                            await hitcrit()
+                            player['degenimg'] += 1
+                            player['lives'] = 0
+                            await asyncio.sleep(1)
+                        else:
+                            await hit()
+                            player['lives'] -= 1     
+                            player['images'] += 1
+                            await ctx.channel.send('{mention}, you lost a life! You have {lives} lives left.'.format(mention=player['mention'], lives=player['lives']))
+                        if player['lives'] == 0:
+                            await ctx.channel.send('{mention}, you\'re out!'.format(mention=player['mention']))
+                            Roulette.party.remove(player['user'])
+                            await asyncio.sleep(1)
             else:
                 roundn+=1
-                await ctx.channel.send('Round over.')
+                await ctx.channel.send('Round over.')  
                 await asyncio.sleep(2)
-
-                if not Roulette.sessionOngoing == True:
-                    await ctx.channel.send('Session over.')
+                if (not Roulette.sessionOngoing == True) or (len(playerlist) == 0):
+                    over = await ctx.channel.send('Session over.')
+                    results = discord.Embed(
+                        color=0x001EE6,
+                        title='Results'
+                    )
+                    for player in Players.values():
+                        results.add_field(
+                            inline=False,
+                            name=player.get('user').name,
+                            value='**{total}** images in total:\n\t**{normal}** "normal",\n\t**{degen}** degenerate.'.format(total=player.get('images')+player.get('degenimg'), normal=player.get('images'), degen=player.get('degenimg'))
+                            )
+                    await over.reply(embed=results)
+                    Roulette.mode = ''
+                    Roulette.sessionOngoing = False
+                    Roulette.party = []
+                    Roulette.partyCreation = False
+                    Roulette.sessionMaster = None
+                    Roulette.lives = 0
                     return
                 else: pass
                 await ctx.channel.send(f'Round {roundn}:')
@@ -196,7 +269,8 @@ class Roulette(commands.Cog):
     @app_commands.describe(mode='Mode to use during the session. Defaults to \'normal\'.')
     @app_commands.choices(mode=[
         app_commands.Choice(name='normal', value='normal'),
-        app_commands.Choice(name='hard', value='hard')
+        app_commands.Choice(name='hard', value='hard'),
+        app_commands.Choice(name='battle_royale', value='battle-royale'),
     ])
     async def roulette(self, ctx, mode='normal'):
         if not ctx.channel.is_nsfw():
@@ -213,6 +287,23 @@ class Roulette(commands.Cog):
         Roulette.party.append(ctx.author)
         Roulette.sessionMaster = ctx.author
         Roulette.mode = mode
+        if mode == 'battle-royale':
+            class LivesForm(discord.ui.Modal, title='Lives Number Selector'):
+                lives = discord.ui.TextInput(
+                    label='How many lives will each player have?',
+                    required=True,
+                    style= discord.TextStyle.short,
+                    placeholder='3',
+                    default=3
+                )
+                async def on_submit(self, interaction: discord.Interaction):
+                    await interaction.response.send_message(f'Lives set to {self.lives.value}.',delete_after=8)
+                    Roulette.lives = int(self.lives.value)
+                    self.stop()
+            LivesInput = LivesForm()
+            await ctx.interaction.response.send_modal(LivesInput)
+            await LivesInput.wait()
+        else: pass
         await ctx.send('Party created! Type \'/roulette join\' to join!')
 
     @roulette.command(name='join', description='[NSFW] Joins you to a session queue.')
@@ -314,11 +405,12 @@ class Roulette(commands.Cog):
         else: pass
         await ctx.send('The session will end when the round is over.')
         Roulette.sessionOngoing = False
-        Roulette.mode = ''
         Roulette.party = []
         Roulette.partyCreation = False
 
         Roulette.sessionMaster = None
+
+        Roulette.lives = 0
 
     @roulette.command(name='info-list', description='[NSFW] Lists info about the session.')
     async def info(self,ctx):
