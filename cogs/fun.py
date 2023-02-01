@@ -82,6 +82,7 @@ class Roulette(commands.Cog):
         roundn = 1
 
         class Actions(discord.ui.View):
+            user : discord.User
             shot = False
             spinned = False
             @discord.ui.button(label='Shoot!',style=discord.ButtonStyle.danger)
@@ -176,6 +177,7 @@ class Roulette(commands.Cog):
             for member in playerlist:
                 actions = Actions()
                 actions.user = member
+
                 player = Players[member.name]
                 await asyncio.sleep(1)
                 message = await ctx.channel.send(f'{member.mention}, it\'s your turn.', view=actions)
@@ -186,6 +188,7 @@ class Roulette(commands.Cog):
                 
                 if actions.spinned == True:
                     HardModeR1 = random.randint(1,6)
+
                 else: pass  
                 match Roulette.mode:
                     case 'hard':
@@ -406,6 +409,7 @@ class Roulette(commands.Cog):
         Roulette.partyCreation = False
 
         Roulette.sessionMaster = None
+
         Roulette.lives = 0
 
     @roulette.command(name='info-list', description='[NSFW] Lists info about the session.')
