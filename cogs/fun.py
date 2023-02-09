@@ -67,7 +67,7 @@ class Faith_In_Humanity(commands.Cog, name='Faith in humanity'):
         except:
             await ctx.send("For whatever reason, *ahem, ahem, check the console* the image couldn't be sent. Sucks to be you, huh?")
 
-class Roulette(commands.Cog):
+class Roulette(commands.Cog):   
     def __init__(self, bot):
         self.bot = bot
 
@@ -180,6 +180,10 @@ class Roulette(commands.Cog):
 
                 player = Players[member.name]
                 await asyncio.sleep(1)
+                if len(playerlist) == 1:
+                    await ctx.send('{mention}, you\'ve won!'.format(mention=player['mention']))
+                    playerlist.remove(player['user'])
+                    continue
                 message = await ctx.channel.send(f'{member.mention}, it\'s your turn.', view=actions)
                 if Roulette.mode=='battle-royale': await message.edit(content=message.content+' ('+'❤️'*player['lives']+'🖤'*(Roulette.lives-player['lives'])+')')
                 actions.message = message
@@ -231,7 +235,11 @@ class Roulette(commands.Cog):
                             await hit()
                             player['lives'] -= 1     
                             player['images'] += 1
-                            await ctx.channel.send('{mention}, you lost a life! You have {lives} lives left.'.format(mention=player['mention'], lives=player['lives']))
+                            if player['lives'] == 1:
+                                await ctx.channel.send('{mention}, you lost a life! You have 1 life left, so be careful!'.format(mention=player['mention']))
+                            else:
+                                await ctx.channel.send('{mention}, you lost a life! You have {lives} lives left.'.format(mention=player['mention'], lives=player['lives']))
+                            
                         if player['lives'] == 0:
                             await ctx.channel.send('{mention}, you\'re out!'.format(mention=player['mention']))
                             Roulette.party.remove(player['user'])
@@ -443,7 +451,63 @@ class Roulette(commands.Cog):
         embed.add_field(name='What is this?', inline=True, value='/roulette is a command used to play Russian roulette. This roulette consists of a certain chance of getting a porn image from e621.net, with an even lesser chance of getting degeneracy.\n\nYou create a session with `/roulette create`, and then people join with `/roulette join`. When everyone is ready, use `/roulette start` to begin the session.\n\nYou can declare a mode in `/roulette create`, that is detailed on the following section.')
         embed.add_field(name='Modes', inline=True, value='`normal`: 1/6 chance of porn, 1/36 chance of REALLY messed up porn.\n\n`hard`: It behaves like a real Russian roulette, each shot gets you closer to a bullet, each bullet gets you closer to REALLY messed up porn.')
         await ctx.send(embed=embed)
+
+class Music(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+    
+    # Checks
+    async def play_checks(self,ctx):
+        bot = ctx.guild.get_member(self.bot.user.id)
+        if ctx.author.voice == None:
+            raise Exception('User not in voice chat')
+        if (bot.voice == None) or (bot.voice.channel != ctx.author.voice.channel):
+            await ctx.author.voice.channel.connect()
+            return
+        if (bot.voice.channel == ctx.author.voice.channel):
+            return
+    def disconnect_checks(self,ctx):
+        bot = ctx.guild.get_member(self.bot.user.id)
+        if (bot.voice.channel == None):
+            raise Exception('Not in a voice channel to begin with')
+        else:
+            return
+
+    # Commands
+    @commands.hybrid_command(name='play',description='Play a song from YouTube.',aliases=['paly','pla'])
+    @app_commands.describe(term='Search term or link to the song.')
+    async def play(self,ctx,term):
+        # Check handling
+        try:
+            await self.play_checks(ctx)
+        except Exception as e:
+            match str(e):
+                case 'User not in voice chat':
+                    await ctx.send(f'{ctx.author.mention}, you are not in a voice channel!')
+                case _:
+                    await ctx.send('An unknown error occurred. Please try again.')
+                    print(e)
+            return
+
+    @commands.hybrid_command(name='disconnect',description='Disconnects the bot from the voice channel and clears the queue.')    
+    async def disconnect(self,ctx):
+        # Check handling
+        try:
+            self.disconnect_checks(ctx)
+        except Exception as e:
+            match str(e):
+                case 'Not in a voice channel to begin with':
+                    await ctx.send('Can\'t disconnect if I wasn\'t connected in the first place!')
+                    return
+                case _:
+                    await ctx.send('An unknown error has occurred. Please try again.')
+                    print(e)
+                    return
+        await ctx.guild.get_member(self.bot.user.id).voice.channel.disconnect()
+        await ctx.send('Disconnected from the voice channel!')
+
 async def setup(bot):
     await bot.add_cog(Fun(bot))
     await bot.add_cog(Faith_In_Humanity(bot))
     await bot.add_cog(Roulette(bot))
+    await bot.add_cog(Music(bot))
