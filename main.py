@@ -17,13 +17,10 @@ async def reload(ctx, arg):
   if not str(ctx.author.id) == str(os.getenv('ID')):
     await ctx.send("Maybe this is meant for someone else...")
     return
-  else: pass
-
-  if (not arg in cogs) and (not arg == 'tree'): 
+  elif (not arg in cogs) and (not arg == 'tree'): 
     await ctx.send("The argument is not a valid module.")
     return
   else: pass
-
   if arg == "tree":
     try:
       await vap.tree.sync()
@@ -32,8 +29,6 @@ async def reload(ctx, arg):
       return
     await ctx.send("🟩 Command tree reloaded!")
     return
-  else: pass
-  
   await ctx.send(f"🟧 Reloading {arg}...")
   try:
     await vap.reload_extension(arg)
