@@ -452,62 +452,8 @@ class Roulette(commands.Cog):
         embed.add_field(name='Modes', inline=True, value='`normal`: 1/6 chance of porn, 1/36 chance of REALLY messed up porn.\n\n`hard`: It behaves like a real Russian roulette, each shot gets you closer to a bullet, each bullet gets you closer to REALLY messed up porn.')
         await ctx.send(embed=embed)
 
-class Music(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
-    
-    # Checks
-    async def play_checks(self,ctx):
-        bot = ctx.guild.get_member(self.bot.user.id)
-        if ctx.author.voice == None:
-            raise Exception('User not in voice chat')
-        if (bot.voice == None) or (bot.voice.channel != ctx.author.voice.channel):
-            await ctx.author.voice.channel.connect()
-            return
-        if (bot.voice.channel == ctx.author.voice.channel):
-            return
-    def disconnect_checks(self,ctx):
-        bot = ctx.guild.get_member(self.bot.user.id)
-        if (bot.voice.channel == None):
-            raise Exception('Not in a voice channel to begin with')
-        else:
-            return
-
-    # Commands
-    @commands.hybrid_command(name='play',description='Play a song from YouTube.',aliases=['paly','pla'])
-    @app_commands.describe(term='Search term or link to the song.')
-    async def play(self,ctx,term):
-        # Check handling
-        try:
-            await self.play_checks(ctx)
-        except Exception as e:
-            match str(e):
-                case 'User not in voice chat':
-                    await ctx.send(f'{ctx.author.mention}, you are not in a voice channel!')
-                case _:
-                    await ctx.send('An unknown error occurred. Please try again.')
-                    print(e)
-            return
-
-    @commands.hybrid_command(name='disconnect',description='Disconnects the bot from the voice channel and clears the queue.')    
-    async def disconnect(self,ctx):
-        # Check handling
-        try:
-            self.disconnect_checks(ctx)
-        except Exception as e:
-            match str(e):
-                case 'Not in a voice channel to begin with':
-                    await ctx.send('Can\'t disconnect if I wasn\'t connected in the first place!')
-                    return
-                case _:
-                    await ctx.send('An unknown error has occurred. Please try again.')
-                    print(e)
-                    return
-        await ctx.guild.get_member(self.bot.user.id).voice.channel.disconnect()
-        await ctx.send('Disconnected from the voice channel!')
 
 async def setup(bot):
     await bot.add_cog(Fun(bot))
     await bot.add_cog(Faith_In_Humanity(bot))
     await bot.add_cog(Roulette(bot))
-    await bot.add_cog(Music(bot))

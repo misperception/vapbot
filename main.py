@@ -2,7 +2,7 @@ import os, time, discord
 from dotenv import load_dotenv
 from discord.ext import commands
 
-load_dotenv('exp.env')
+load_dotenv('exp.env')  
 token = os.getenv('TOKEN')
 
 intents = discord.Intents.all()
@@ -10,7 +10,7 @@ intents.presences = False
 
 vap = commands.Bot(command_prefix=os.getenv('PREFIX'), intents=intents)
 
-cogs = ["cogs.fun", "cogs.trollface"]
+cogs = ["cogs.fun", "cogs.trollface", "cogs.music"]
 
 @vap.hybrid_command(name='vapreload', description='Reloads command cogs or the entire command tree.')
 async def reload(ctx, arg):
@@ -65,7 +65,7 @@ async def on_ready():
     print("🟥 Command tree took too long to load!")
   time.sleep(2)
   print("Loading complete! Also did you know that in terms of ma-")
-
+@vap.event
 async def on_disconnect():
   print("Vaporeon has breached the jar.")
 
