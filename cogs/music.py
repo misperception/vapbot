@@ -8,6 +8,7 @@ class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.queue = []
+        self.looping = False
         self.playing = False
         self.ytdlOPTS = {'format': 'bestaudio','noplaylist': True,'quiet': True}
         self.FFmpegOPTS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5','options': '-vn'}
@@ -54,13 +55,15 @@ class Music(commands.Cog):
     def queuemanage(self,ctx):
         if not len(self.queue) > 0:
             self.playing = False
+            self.nowplaying = None
             return
         self.playing = True
-        self.nowplaying = ' '.join([self.queue[0]['title'],self.queue[0]['duration']])
+        self.nowplaying = self.queue[0]
         song = self.queue[0]['url']
-        self.queue.pop(0)
+        if not self.looping == True:
+            self.queue.pop(0)
         self.voice.play(discord.FFmpegPCMAudio(source=song,**self.FFmpegOPTS),after=lambda e:self.queuemanage(ctx))
-    
+  
     # Commands
     @commands.hybrid_command(name='play',description='Play a song from YouTube.',aliases=['paly','pla','p'])
     @app_commands.describe(term='Search term or link to the song.')
@@ -79,7 +82,7 @@ class Music(commands.Cog):
             return
         await ctx.send(f'Searching `{term}` on YouTube...')
         self.queue.append(self.searchyt(term=term))
-        await ctx.send('Added `{title}` to queue!'.format(title=self.queue[:-1]['title']))
+        await ctx.send('Added `{title}` to queue!'.format(title=self.queue[-1]['title']))
         if self.playing != True:
             self.queuemanage(ctx.channel)
         else: pass
@@ -99,8 +102,10 @@ class Music(commands.Cog):
                     print(e)
                     return
         self.voice.stop()
+        self.playing = False
+        self.nowplaying = None
         self.queue = []
-        await self.vc.disconnect()
+        await self.voice.disconnect()
         await ctx.send('Disconnected from the voice channel and cleared the queue!')
 
     @commands.hybrid_command(name='skip',aliases=['sikp','spki','s'],description='Skips the current song.')
@@ -109,10 +114,10 @@ class Music(commands.Cog):
             await ctx.send('I can\'t skip a non-existent song you moron!')
             return
         self.voice.stop()
-        await ctx.send(f'Skipped {self.nowplaying}')
+        await ctx.send('Skipped {}'.format(' '.join([self.nowplaying['title'],self.nowplaying['duration']])))
         self.queuemanage(ctx)
 
-    @commands.hybrid_command(name='queue',aliases=['np','q','now_playing','list','l'],description='Shows the curent queue.')
+    @commands.hybrid_command(name='queue',aliases=['np','q','now_playing','list'],description='Shows the curent queue.')
     async def music_queue(self,ctx):
         if not self.playing == True:
             await ctx.send('The queue is empty.')
@@ -122,7 +127,7 @@ class Music(commands.Cog):
             color=0x1770fe,
             title='Queue'
         )
-        queue_embed.add_field(name='Now playing:',value=self.nowplaying+'\n',inline=False)
+        queue_embed.add_field(name='Now playing:',value=' '.join([self.nowplaying['title'],self.nowplaying['duration']])+'\n',inline=False)
         if len(self.queue) > 0:
             queue_embed.add_field(name='Queued songs:',value=titles,inline=False)
         await ctx.send(embed=queue_embed)
@@ -176,6 +181,16 @@ class Music(commands.Cog):
     #     if self.playing != True:
     #         self.queuemanage(ctx.channel)
     #     else: pass
-
+    @commands.hybrid_command(name='loop',aliases=['repeat','r','l'],description='Toggles loop mode.')
+    async def loop(self,ctx):
+        if self.looping == True:
+            self.looping = False
+            await ctx.send('Loop mode set to `false`.')
+        else:
+            self.looping = True
+            await ctx.send('Loop mode set to `true`.')
+            if not len(self.queue) > 0:
+                self.queue.append(self.nowplaying)
+            
 async def setup(bot):
     await bot.add_cog(Music(bot))
