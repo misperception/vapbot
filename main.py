@@ -1,21 +1,21 @@
 import os, time, discord
-from dotenv import load_dotenv
 from discord.ext import commands
 
 
-load_dotenv('.env')
-token = os.getenv('TOKEN')
+TOKEN = os.getenv('TOKEN')
+PREFIX = os.getenv('PREFIX')
+ID = os.getenv('ID')
 
 intents = discord.Intents.all()
 intents.presences = False
 
-vap = commands.Bot(command_prefix=os.getenv('PREFIX'), intents=intents)
+vap = commands.Bot(command_prefix=PREFIX, intents=intents)
 
 cogs = ["cogs.fun", "cogs.trollface", "cogs.music"]
 
 @vap.hybrid_command(name='vapreload', description='Reloads command cogs or the entire command tree.')
 async def reload(ctx, arg):
-  if not str(ctx.author.id) == str(os.getenv('ID')):
+  if str(ctx.author.id) != str(ID):
     await ctx.send("Maybe this is meant for someone else...")
     return
   elif (not arg in cogs) and (not arg == 'tree'): 
@@ -66,6 +66,6 @@ async def on_disconnect():
   print("Vaporeon has breached the jar.")
 
 try:
-  vap.run(token)
+  vap.run(TOKEN)
 except Exception as e:
-  print(f"Instance with token {token} couldn't load because of {e}")
+  print(f"Instance with token {TOKEN} couldn't load because of {e}")
