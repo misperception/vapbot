@@ -1,12 +1,120 @@
 # VapBot
-A bot for all your disgusting and degenerate necessities!
-## What does it do?
-VapBot can do many things, such as spam furry porn, spam furry degenerate porn, spam furry pokemon porn, spam furry pokemon degenerate porn and take away your remaining faith in humanity!
-## So it's all just furry smut?
-Yes indeed!
-## Why did you make this?
-This bot serves two purposes: the first one is to make something I can fear afterwards, and the second one is to force me to learn Python the worst way possible.
-## Neat, but how do I set it up?
-If you want to include this bot into a server of your own, please do so using this link: https://discord.com/api/oauth2/authorize?client_id=942808901747900467&permissions=8&scope=bot
 
-If you want to include this bot into a server, but you aren't the owner or an administrator, please don't. Like seriously. Don't. Ever. Do. That. Specially regarding this specific bot. Don't even ask for it. I mean even if you just wanted furry porn there surely are better bots for that purpose, so don't add this bot, please ~~I'm literally begging you at this point.~~
+> A bot for all your disgusting and degenerate necessities!
+***
+
+> [!WARNING]
+> This project is discontinued as of this commit, the code is extremely messy and unfortunately I do not have the time to refactor it nor do I have the interest in it. I thank it for revitalizing my love for programming in several occasions.
+
+## What is VapBot?
+
+Vapbot is a Discord bot made with [discord.py](https://github.com/Rapptz/discord.py) with multiple features ~~(none of them good)~~. It was born as a way to piss off a friend and evolved into a personal project to force me to learn Python in general, but also many other aspects of programming as it was being developed.
+
+## Alright, but what can it do?
+
+I'm glad you ask. VapBot can currently:
+
+- Fetch Vaporeon images from e621.net and spam them in channels ***AND*** DMs! (please use this in moderation)
+- Serve as a music bot! (allegedly)
+- Post the [Vaporeon Copypasta](https://www.reddit.com/r/copypasta/comments/eidplc/vaporeon_copypasta/).
+- Host Russian Roulette sessions! (more on this [later](#commands))
+
+## How do I install it?
+
+VapBot is meant to be hosted individually by every server owner that wants to have it. However, this is done extremely easily.
+
+VapBot can then be installed through [Docker](#docker) or by running `main.py` through [venv](#venv). However it is preferred to use Docker as it is easier to manage.
+
+### Docker
+
+> You need to have Docker Engine installed as a prerequisite. Check out <https://docs.docker.com/engine/install/> for more information.
+
+If you want to build the image from scratch:
+
+1. Clone the Github repository:
+
+```bash
+git clone https://github.com/misperception/vapbot
+cd vapbot
+```
+
+2. Build the Docker image from the Dockerfile:
+
+```bash
+sudo docker build -t vapbot:latest .
+```
+
+Otherwise you could just use the Docker Hub image. (<https://hub.docker.com/r/misperception/vapbot>)
+
+3. Run the image:
+
+If you want to run the image through Docker Compose, add the following snippet to your `compose.yml` file:
+
+```yaml
+services:
+    vapbot:
+        container_name: vapbot
+        # image_name: vapbot:latest if you built the image from the repo
+        image_name: misperception/vapbot # to pull the image from Docker Hub (recommended)
+        restart: unless_stopped
+        environment:
+            - TOKEN= # insert your bot token from https://discord.com/developers/applications
+            - ID= # insert your Discord user ID to access debugging commands
+            - PREFIX= # insert a prefix for classic text-based commands
+```
+
+This is the recommended method for adding the bot.
+
+Otherwise run the following command:
+
+```bash
+sudo docker run -d \
+    --name vapbot \
+    -e TOKEN= `# insert your bot token from https://discord.com/developers/applications` \
+    -e ID= `# insert your Discord user ID to access debugging commands` \
+    -e PREFIX= `# insert a prefix for classic text-based commands` \
+    --restart unless-stopped \
+    misperception/vapbot # to pull the image from Docker Hub (recommended)
+    # vapbot:latest # if you built the image from the repo
+```
+
+### venv
+
+> You need to have Python installed as a prerequisite.
+
+1. Clone the Github repository:
+
+```bash
+git clone https://github.com/misperception/vapbot
+cd vapbot
+```
+
+2. Run `python -m venv venv` to create a virtual environment.
+
+3. Modify the activation script of your preference in `venv/Scripts` to include the following:
+
+> For `Activate.ps1`:
+
+```ps1
+$env:TOKEN=# insert your bot token from https://discord.com/developers/applications
+$env:ID=# insert your Discord user ID to access debugging commands
+$env:PREFIX=# insert a prefix for classic text-based commands
+```
+
+> For `activate.bat`:
+
+```
+set TOKEN=(insert your bot token from https://discord.com/developers/applications)
+set ID=(insert your Discord user ID to access debugging commands)
+set PREFIX=(insert a prefix for classic text-based commands)
+```
+
+> For `activate`:
+
+```bash
+TOKEN= # insert your bot token from https://discord.com/developers/applications
+ID= # insert your Discord user ID to access debugging commands
+PREFIX= # insert a prefix for classic text-based commands
+```
+
+You will need to run the activation script every time you want to start the bot, this is not an automated installation (unlike Docker).

@@ -1,6 +1,5 @@
-Include
-Scripts
 venv
-exp.env
-__pycache__
-Sandbox
+*.env
+cogs/__pycache__
+cogs/lib/__pycache__
+cogs/lib/youtube_dl_mod/__pycache__
