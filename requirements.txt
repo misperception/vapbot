@@ -1,5 +1,4 @@
 discord.py[voice]
 asyncio
 requests
-python-dotenv
 pandas

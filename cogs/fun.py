@@ -420,7 +420,7 @@ class Roulette(commands.Cog):
 
         Roulette.lives = 0
 
-    @roulette.command(name='info-list', description='[NSFW] Lists info about the session.')
+    @roulette.command(name='info', description='[NSFW] Lists info about the session.')
     async def info(self,ctx):
         if not ctx.channel.is_nsfw():
             await ctx.send('Make sure to run this in a NSFW channel')

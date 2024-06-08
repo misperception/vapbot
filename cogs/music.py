@@ -4,42 +4,50 @@ from cogs.lib.vapbotutils import time_converter
 from discord.ext import commands
 from discord import app_commands
 
+
 class Music(commands.Cog):
     def __init__(self, bot):
+        self.vc = None
+        self.nowPlaying = None
+        self.voice = None
         self.bot = bot
         self.queue = []
         self.looping = False
         self.playing = False
-        self.ytdlOPTS = {'format': 'bestaudio','noplaylist': True,'quiet': True}
-        self.FFmpegOPTS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5','options': '-vn'}
-    
+        self.ytdlOPTS = {'format': 'bestaudio', 'noplaylist': True, 'quiet': True}
+        self.FFmpegOPTS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
+                           'options': '-vn'}
+
     # Checks
-    async def play_checks(self,ctx):
+    async def play_checks(self, ctx):
         bot = ctx.guild.get_member(self.bot.user.id)
-        if ctx.author.voice == None:
+        if ctx.author.voice is None:
             raise Exception('User not in voice chat')
-        if (bot.voice == None) or (bot.voice.channel != self.vc):
+        if (bot.voice is None) or (bot.voice.channel != self.vc):
             self.voice = await ctx.author.voice.channel.connect()
             return
-        if (bot.voice.channel == ctx.author.voice.channel):
+        if bot.voice.channel is ctx.author.voice.channel:
             return
-    def disconnect_checks(self,ctx):
+
+    def disconnect_checks(self, ctx):
         bot = ctx.guild.get_member(self.bot.user.id)
-        if (bot.voice == None):
+        if bot.voice is None:
             raise Exception('Not in a voice channel to begin with')
         else:
             return
 
     # Functions
-    def searchyt(self,term,mode='normal'):
+    def search_YT(self, term, mode='normal'):
         with YoutubeDL(self.ytdlOPTS) as ytdl:
             match mode:
-                case 'normal': 
+                case 'normal':
                     try:
                         vid = ytdl.extract_info('ytsearch:%s' % term, download=False)['entries'][0]
-                    except: return
-                    
-                    info = {'url': vid['formats'][0]['url'], 'title': vid['title'], 'duration': '[{}]'.format(time_converter(vid['duration']))}
+                    except:
+                        return
+
+                    info = {'url': vid['formats'][0]['url'], 'title': vid['title'],
+                            'duration': '[{}]'.format(time_converter(vid['duration']))}
                 # case 'choice':
                 #     info = {}
                 #     try:
@@ -52,22 +60,23 @@ class Music(commands.Cog):
                 #         print(iterinfo)
                 #         info.update(iterinfo)
             return info
-    def queuemanage(self,ctx):
+
+    def queueManage(self, ctx):
         if not len(self.queue) > 0:
             self.playing = False
-            self.nowplaying = None
+            self.nowPlaying = None
             return
         self.playing = True
-        self.nowplaying = self.queue[0]
+        self.nowPlaying = self.queue[0]
         song = self.queue[0]['url']
-        if not self.looping == True:
+        if self.looping is False:
             self.queue.pop(0)
-        self.voice.play(discord.FFmpegPCMAudio(source=song,**self.FFmpegOPTS),after=lambda e:self.queuemanage(ctx))
-  
+        self.voice.play(discord.FFmpegPCMAudio(source=song, **self.FFmpegOPTS), after=lambda e: self.queueManage(ctx))
+
     # Commands
-    @commands.hybrid_command(name='play',description='Play a song from YouTube.',aliases=['paly','pla','p'])
+    @commands.hybrid_command(name='play', description='Play a song from YouTube.', aliases=['paly', 'pla', 'p'])
     @app_commands.describe(term='Search term or link to the song.')
-    async def play(self,ctx,term):
+    async def play(self, ctx, term):
         # Check handling
         self.vc = ctx.author.voice.channel
         try:
@@ -81,14 +90,16 @@ class Music(commands.Cog):
                     print(e)
             return
         await ctx.send(f'Searching `{term}` on YouTube...')
-        self.queue.append(self.searchyt(term=term))
+        self.queue.append(self.search_YT(term=term))
         await ctx.send('Added `{title}` to queue!'.format(title=self.queue[-1]['title']))
-        if self.playing != True:
-            self.queuemanage(ctx.channel)
-        else: pass
+        if self.playing is not True:
+            self.queueManage(ctx.channel)
+        else:
+            pass
 
-    @commands.hybrid_command(name='disconnect',aliases=['stop','d','sotp'],description='Disconnects the bot from the voice channel and clears the queue.')    
-    async def disconnect(self,ctx):
+    @commands.hybrid_command(name='disconnect', aliases=['stop', 'd', 'sotp'],
+                             description='Disconnects the bot from the voice channel and clears the queue.')
+    async def disconnect(self, ctx):
         # Check handling
         try:
             self.disconnect_checks(ctx)
@@ -103,35 +114,39 @@ class Music(commands.Cog):
                     return
         self.voice.stop()
         self.playing = False
-        self.nowplaying = None
+        self.nowPlaying = None
         self.queue = []
         await self.voice.disconnect()
         await ctx.send('Disconnected from the voice channel and cleared the queue!')
 
-    @commands.hybrid_command(name='skip',aliases=['sikp','spki','s'],description='Skips the current song.')
-    async def skip(self,ctx):
-        if not((self.vc != None) and self.playing == True):
+    @commands.hybrid_command(name='skip', aliases=['sikp', 'spki', 's'], description='Skips the current song.')
+    async def skip(self, ctx):
+        if not ((self.vc is not None) and self.playing is True):
             await ctx.send('I can\'t skip a non-existent song you moron!')
             return
         self.voice.stop()
-        await ctx.send('Skipped {}'.format(' '.join([self.nowplaying['title'],self.nowplaying['duration']])))
-        self.queuemanage(ctx)
+        await ctx.send('Skipped `{}`'.format(' '.join([self.nowPlaying['title'], self.nowPlaying['duration']])))
+        self.nowPlaying = None
+        self.queueManage(ctx)
 
-    @commands.hybrid_command(name='queue',aliases=['np','q','now_playing','list'],description='Shows the curent queue.')
-    async def music_queue(self,ctx):
-        if not self.playing == True:
+    @commands.hybrid_command(name='queue', aliases=['np', 'q', 'now_playing', 'list'],
+                             description='Shows the current queue.')
+    async def music_queue(self, ctx):
+        if self.playing is False:
             await ctx.send('The queue is empty.')
             return
-        titles = '\n'.join([i['title']+' {duration}'.format(i['duration']) for i in self.queue])
+        titles = '\n'.join([i['title'] + ' {duration}'.format(duration=i['duration']) for i in self.queue])
         queue_embed = discord.Embed(
             color=0x1770fe,
             title='Queue'
         )
-        queue_embed.add_field(name='Now playing:',value=' '.join([self.nowplaying['title'],self.nowplaying['duration']])+'\n',inline=False)
+        queue_embed.add_field(name='Now playing:',
+                              value=' '.join([self.nowPlaying['title'], self.nowPlaying['duration']]) + '\n',
+                              inline=False)
         if len(self.queue) > 0:
-            queue_embed.add_field(name='Queued songs:',value=titles,inline=False)
+            queue_embed.add_field(name='Queued songs:', value=titles, inline=False)
         await ctx.send(embed=queue_embed)
-    
+
     # @commands.hybrid_command(name='search',description='Search a song on YouTube.')
     # @app_commands.describe(term='Search term to use on YouTube.')
     # async def search(self,ctx,term):
@@ -147,7 +162,7 @@ class Music(commands.Cog):
     #                 print(e)
     #         return
     #     await ctx.send(f'Searching `{term}` on YouTube...')
-    #     results = self.searchyt(term,mode='choice')
+    #     results = self.search_YT(term,mode='choice')
 
     #     # Embed creation
     #     results_embed = discord.Embed(color=0xbfba4e,title=f'Results of "{term}"')
@@ -179,18 +194,19 @@ class Music(commands.Cog):
     #     self.queue.append(results[results_view.chosen])
     #     await ctx.send('Added `{title}` to queue!'.format(title=self.queue[:-1]['title']))
     #     if self.playing != True:
-    #         self.queuemanage(ctx.channel)
+    #         self.queueManage(ctx.channel)
     #     else: pass
-    @commands.hybrid_command(name='loop',aliases=['repeat','r','l'],description='Toggles loop mode.')
-    async def loop(self,ctx):
-        if self.looping == True:
+    @commands.hybrid_command(name='loop', aliases=['repeat', 'r', 'l'], description='Toggles loop mode.')
+    async def loop(self, ctx):
+        if self.looping is True:
             self.looping = False
             await ctx.send('Loop mode set to `false`.')
         else:
             self.looping = True
             await ctx.send('Loop mode set to `true`.')
             if not len(self.queue) > 0:
-                self.queue.append(self.nowplaying)
-            
+                self.queue.append(self.nowPlaying)
+
+
 async def setup(bot):
     await bot.add_cog(Music(bot))
