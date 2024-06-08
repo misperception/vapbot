@@ -19,7 +19,7 @@ I'm glad you ask. VapBot can currently:
 - Post the [Vaporeon Copypasta](https://www.reddit.com/r/copypasta/comments/eidplc/vaporeon_copypasta/).
 - Host Russian Roulette sessions! (more on this [later](#commands))
 
-## How do I install it?
+## Installation
 
 VapBot is meant to be hosted individually by every server owner that wants to have it. However, this is done extremely easily.
 
@@ -118,3 +118,9 @@ PREFIX= # insert a prefix for classic text-based commands
 ```
 
 You will need to run the activation script every time you want to start the bot, this is not an automated installation (unlike Docker).
+
+## Commands
+
+VapBot supports [Slash Commands](https://discord.com/blog/welcome-to-the-new-era-of-discord-apps), though conventional prefix commands are also supported. Configure the prefix during the installation.
+
+> See [List of commands](commands.md).
