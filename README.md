@@ -54,8 +54,8 @@ If you want to run the image through Docker Compose, add the following snippet t
 services:
     vapbot:
         container_name: vapbot
-        # image_name: vapbot:latest if you built the image from the repo
-        image_name: misperception/vapbot # to pull the image from Docker Hub (recommended)
+        # image-name: vapbot:latest if you built the image from the repo
+        image-name: misperception/vapbot # to pull the image from Docker Hub (recommended)
         restart: unless_stopped
         environment:
             - TOKEN= # insert your bot token from https://discord.com/developers/applications
